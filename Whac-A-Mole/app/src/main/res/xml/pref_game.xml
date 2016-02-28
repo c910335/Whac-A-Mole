@@ -1,0 +1,17 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_display_time"
+        android:inputType="number"
+        android:key="time"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_display_time" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="penalty"
+        android:title="Penalty" />
+
+</PreferenceScreen>
