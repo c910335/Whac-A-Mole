@@ -1,7 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <EditTextPreference
-        android:defaultValue="@string/pref_default_display_time"
+        android:defaultValue="@string/pref_default_time"
         android:inputType="number"
         android:key="time"
         android:maxLines="1"
@@ -12,6 +12,13 @@
     <SwitchPreference
         android:defaultValue="true"
         android:key="penalty"
-        android:title="Penalty" />
+        android:title="@string/pref_title_display_penalty" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="default"
+        android:title="@string/pref_title_display_default"
+        android:summaryOn="@string/pref_summary_on_default"
+        android:summaryOff="@string/pref_summary_off_default"/>
 
 </PreferenceScreen>

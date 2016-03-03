@@ -2,6 +2,9 @@ package asia.tatsujin.whac_a_mole;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
@@ -28,16 +31,19 @@ import java.util.TimerTask;
 public class GameActivity extends AppCompatActivity {
 
     final static int SPEED[] = {500, 300, 200, 50};
-    boolean isStart = false, penalty, isPenalizing = false;
-    int defaultTime, time, score = 0, speed, highScore;
-    TextView timeText, scoreText;
-    ImageButton startButton;
-    LinearLayout molesView;
-    List<Mole> moles;
-    Random random;
+    private boolean isStart = false, penalty, isPenalizing = false;
+    private int defaultTime, time, score = 0, speed, highScore;
+    private TextView timeText, scoreText;
+    private ImageButton startButton;
+    private LinearLayout molesView;
+    private List<Mole> moles;
+    private Random random;
     private Timer gameTimer;
     private Timer timeTimer;
-
+    private MediaPlayer bgm;
+    private SoundPool sePool;
+    private int hitSeId;
+    private int penaltySeId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,30 @@ public class GameActivity extends AppCompatActivity {
         initViews();
         setListeners();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bgm.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            gameTimer.cancel();
+            timeTimer.cancel();
+        } catch (Exception ignored) {}
+        bgm.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        bgm.release();
+        sePool.release();
+        super.onDestroy();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -85,12 +115,12 @@ public class GameActivity extends AppCompatActivity {
             }
 
             @Override
-            public void destroyItem(ViewGroup container, int position, Object object)   {
+            public void destroyItem(ViewGroup container, int position, Object object) {
                 container.removeView((View) object);
             }
 
             @Override
-             public Object instantiateItem(ViewGroup container, int position) {
+            public Object instantiateItem(ViewGroup container, int position) {
                 View view = imageViews.get(position);
                 container.addView(view);
                 return view;
@@ -103,15 +133,6 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onPause() {
-        try {
-            gameTimer.cancel();
-            timeTimer.cancel();
-        } catch (Exception ignored) {}
-        super.onPause();
-    }
-
     private void initVariables() {
         speed = SPEED[getIntent().getIntExtra("difficulty", 0)];
         highScore = PreferenceManager.getDefaultSharedPreferences(this).getInt("high_score", 0);
@@ -119,6 +140,18 @@ public class GameActivity extends AppCompatActivity {
         penalty = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("penalty", true);
         random = new Random();
         moles = new ArrayList<>();
+        bgm = MediaPlayer.create(this, R.raw.bgm_game);
+        bgm.setLooping(true);
+        sePool = new SoundPool.Builder()
+                .setMaxStreams(10)
+                .setAudioAttributes(
+                        new AudioAttributes.Builder()
+                                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                                .setUsage(AudioAttributes.USAGE_GAME)
+                                .build())
+                .build();
+        hitSeId = sePool.load(this, R.raw.se_hit, 2);
+        penaltySeId = sePool.load(this, R.raw.se_penalty, 1);
     }
 
     private void initViews() {
@@ -163,10 +196,10 @@ public class GameActivity extends AppCompatActivity {
                         if (mole.isUp()) {
                             addScore();
                             mole.hit();
-                            mole.playSoundEffect(0);
+                            sePool.play(hitSeId, 1, 1, 2, 0, 1);
                         } else if (penalty) {
                             penalize();
-                            mole.playSoundEffect(0);
+                            sePool.play(penaltySeId, 1, 1, 1, 0, 1);
                         }
                     }
                 }

@@ -15,15 +15,23 @@
     </array>
     <string name="title_activity_game">Whac-A-Mole</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="pref_title_display_time">Time</string>
-    <string name="pref_default_display_time">10</string>
     <string name="pref_header_game">Game</string>
+    <string name="pref_title_display_time">Time</string>
+    <string name="pref_title_display_penalty">Penalty</string>
+    <string name="pref_title_display_default">Use Default</string>
+    <string name="pref_default_time">10</string>
     <string name="version_label">Version</string>
-    <string name="contributors_label">Contributors</string>
-    <string name="version">0.1</string>
-    <string name="contributors">https://github.com/c910335</string>
+    <string name="version">1.0</string>
     <string name="github_label">Github</string>
-    <string name="github">https://github.com/c910335/Whac-A-Mole</string>
+    <string name="github">
+        <a href="https://github.com/c910335/Whac-A-Mole">Whac-A-Mole</a>
+    </string>
+    <string name="contributors_label">Contributors</string>
+    <string name="contributors">
+        <a href="https://github.com/c910335">Tatsujin Chin</a>\n
+        <a href="https://github.com/harry0514s">harry0514s</a>\n
+        <a href="https://github.com/ScarlettCanaan">ScarlettCanaan</a>
+    </string>
     <string name="action_game_method">Game Method</string>
     <string name="score">Score:</string>
     <string name="time">Time:</string>
@@ -31,5 +39,7 @@
     <string name="step1">step1</string>
     <string name="step2">step2</string>
     <string name="step3">step3</string>
+    <string name="pref_summary_on_default">High score will be stored.</string>
+    <string name="pref_summary_off_default">High score will not be stored.</string>
 
 </resources>

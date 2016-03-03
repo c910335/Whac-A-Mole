@@ -1,6 +1,5 @@
 package asia.tatsujin.whac_a_mole;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -50,7 +49,7 @@ public class RankActivity extends AppCompatActivity {
         scoresView = (LinearLayout) findViewById(R.id.view_scores);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) findViewById(button_login);
+        loginButton = (LoginButton) findViewById(button_login);
         loginButton.registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -64,12 +63,12 @@ public class RankActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancel() {
-                        // App code
+                        finish();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        // App code
+                        Log.w("GG", "G_G");
                     }
                 });
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_games_activity", "user_friends"));
@@ -78,8 +77,6 @@ public class RankActivity extends AppCompatActivity {
 
     private void updateRank() {
         scores = new ArrayList<>();
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.show();
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         JSONObject object = new JSONObject();
         try {
@@ -90,7 +87,6 @@ public class RankActivity extends AppCompatActivity {
         graphRequest = GraphRequest.newPostRequest(accessToken, "me/scores", object, new GraphRequest.Callback() {
             @Override
             public void onCompleted(GraphResponse response) {
-                progressDialog.cancel();
                 if (response == null || response.getError() != null)
                     Log.w("GG", "G_G");
                 else {
@@ -111,13 +107,10 @@ public class RankActivity extends AppCompatActivity {
     }
 
     private void getRank() {
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.show();
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         graphRequest = GraphRequest.newGraphPathRequest(accessToken, getString(R.string.facebook_app_id) + "/scores", new GraphRequest.Callback() {
             @Override
             public void onCompleted(GraphResponse response) {
-                progressDialog.cancel();
                 if (response == null || response.getError() != null)
                     Log.w("GG", "G_G");
                 else {

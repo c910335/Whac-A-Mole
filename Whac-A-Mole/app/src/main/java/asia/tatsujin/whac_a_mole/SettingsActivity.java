@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.SwitchPreference;
@@ -128,13 +127,42 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
+        private EditTextPreference timePref;
+        private SwitchPreference penaltyPref;
+        private SwitchPreference defaultPref;
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_game);
             setHasOptionsMenu(true);
-            bindPreferenceSummaryToValue(findPreference("time"));
-            bindPreferenceSummaryToValue(findPreference("penalty"));
+
+            timePref = (EditTextPreference) findPreference("time");
+            penaltyPref = (SwitchPreference) findPreference("penalty");
+            defaultPref = (SwitchPreference) findPreference("default");
+            bindPreferenceSummaryToValue(timePref);
+            bindPreferenceSummaryToValue(penaltyPref);
+            defaultPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    setLockDefault((Boolean) newValue);
+                    return true;
+                }
+            });
+            setLockDefault(defaultPref.isChecked());
+        }
+
+        private void setLockDefault(boolean lock) {
+            if (lock) {
+                timePref.setEnabled(false);
+                penaltyPref.setEnabled(false);
+                timePref.setText(getString(R.string.pref_default_time));
+                timePref.setSummary(getString(R.string.pref_default_time));
+                penaltyPref.setChecked(true);
+                penaltyPref.setSummary(Boolean.TRUE.toString());
+            } else {
+                timePref.setEnabled(true);
+                penaltyPref.setEnabled(true);
+            }
         }
     }
 
