@@ -2,19 +2,21 @@ package asia.tatsujin.whac_a_mole;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.GridLayout;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,12 +29,14 @@ public class GameActivity extends AppCompatActivity {
 
     final static int SPEED[] = {500, 300, 200, 50};
     boolean isStart = false, penalty, isPenalizing = false;
-    int time, score = 0, speed;
+    int defaultTime, time, score = 0, speed, highScore;
     TextView timeText, scoreText;
-    Button startButton;
-    GridLayout molesGrid;
+    ImageButton startButton;
+    LinearLayout molesView;
     List<Mole> moles;
     Random random;
+    private Timer gameTimer;
+    private Timer timeTimer;
 
 
     @Override
@@ -53,20 +57,66 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (! isStart && item.getItemId() == R.id.action_rule) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.action_rule)
-                    .setMessage("Error 500 Not Implemented")
-                    .show();
+        if (! isStart && item.getItemId() == R.id.action_game_method) {
+            showRule();
             return true;
         }
         return false;
     }
 
+    private void showRule() {
+        ViewPager viewPager = (ViewPager) getLayoutInflater().inflate(R.layout.dialog_game_method, null);
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.action_game_method)
+                .setView(viewPager)
+                .setNegativeButton("Close", null)
+                .show();
+        int[] step_ids = {R.mipmap.step1, R.mipmap.step2, R.mipmap.step3};
+        final ArrayList<ImageView> imageViews = new ArrayList<>();
+        for (int step_id : step_ids) {
+            ImageView imageView = new ImageView(this);
+            imageView.setImageResource(step_id);
+            imageViews.add(imageView);
+        }
+        viewPager.setAdapter(new PagerAdapter() {
+            @Override
+            public int getCount() {
+                return imageViews.size();
+            }
+
+            @Override
+            public void destroyItem(ViewGroup container, int position, Object object)   {
+                container.removeView((View) object);
+            }
+
+            @Override
+             public Object instantiateItem(ViewGroup container, int position) {
+                View view = imageViews.get(position);
+                container.addView(view);
+                return view;
+            }
+
+            @Override
+            public boolean isViewFromObject(View view, Object object) {
+                return view == object;
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        try {
+            gameTimer.cancel();
+            timeTimer.cancel();
+        } catch (Exception ignored) {}
+        super.onPause();
+    }
+
     private void initVariables() {
         speed = SPEED[getIntent().getIntExtra("difficulty", 0)];
-        time = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("time", "10"));
-        penalty = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("penalty", false);
+        highScore = PreferenceManager.getDefaultSharedPreferences(this).getInt("high_score", 0);
+        defaultTime = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("time", "10"));
+        penalty = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("penalty", true);
         random = new Random();
         moles = new ArrayList<>();
     }
@@ -76,19 +126,25 @@ public class GameActivity extends AppCompatActivity {
         timeText = (TextView) findViewById(R.id.text_time);
         timeText.setText(time + "");
         scoreText = (TextView) findViewById(R.id.text_score);
-        molesGrid = (GridLayout) findViewById(R.id.grid_moles);
+        molesView = (LinearLayout) findViewById(R.id.view_moles);
+
         for (int i = 0; i != 3; ++i) {
+            LinearLayout molesRow = new LinearLayout(this);
+            molesRow.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams rowLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            molesRow.setLayoutParams(rowLayoutParams);
             for (int j = 0; j != 3; ++j) {
                 Mole mole = new Mole(this);
-                GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
-                layoutParams.rowSpec = GridLayout.spec(i, 1, 1);
-                layoutParams.columnSpec = GridLayout.spec(j, 1, 1);
-                layoutParams.setGravity(Gravity.FILL);
-                molesGrid.addView(mole, layoutParams);
+                mole.setBackgroundResource(R.drawable.fig_grass);
+                mole.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                mole.setAdjustViewBounds(true);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1);
+                molesRow.addView(mole, layoutParams);
                 moles.add(mole);
             }
+            molesView.addView(molesRow);
         }
-        startButton = (Button) findViewById(R.id.button_start);
+        startButton = (ImageButton) findViewById(R.id.button_start);
     }
 
     private void setListeners() {
@@ -106,7 +162,7 @@ public class GameActivity extends AppCompatActivity {
                         Mole mole = (Mole) v;
                         if (mole.isUp()) {
                             addScore();
-                            mole.popDown();
+                            mole.hit();
                             mole.playSoundEffect(0);
                         } else if (penalty) {
                             penalize();
@@ -124,10 +180,13 @@ public class GameActivity extends AppCompatActivity {
     private void start() {
         startButton.setClickable(false);
         isStart = true;
+        for (Mole mole : moles)
+            mole.start();
+        time = defaultTime;
         timeText.setText(time + "");
         scoreText.setText(score + "");
-        final Timer gameTimer = new Timer();
-        final Timer timeTimer = new Timer();
+        gameTimer = new Timer();
+        timeTimer = new Timer();
         final Runnable updateMoles = new Runnable() {
             @Override
             public void run() {
@@ -193,9 +252,9 @@ public class GameActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        isPenalizing = false;
                         for (Mole mole : moles)
                             mole.resume();
-                        isPenalizing = false;
                     }
                 });
             }
@@ -204,43 +263,45 @@ public class GameActivity extends AppCompatActivity {
 
     private void end() {
         isStart = false;
+        for (Mole mole : moles)
+            mole.end();
         new AlertDialog.Builder(this)
                 .setTitle("Score")
                 .setMessage(score + "")
                 .show();
-        time = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("time", "10"));
+        if (speed == SPEED[2] && penalty && defaultTime == 10 && score > highScore) {
+            highScore = score;
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putInt("high_score", score).commit();
+        }
+        time = defaultTime;
         score = 0;
         startButton.setClickable(true);
     }
 
-    class Mole extends Button {
+    class Mole extends ImageButton {
         private boolean up;
-        private boolean isPenalizing;
-        private Drawable background;
+        private boolean isHitting;
         public int life;
 
         public Mole(Context context) {
             super(context);
-            background = getBackground();
-            isPenalizing = false;
+            isHitting = false;
         }
 
         public void popUp() {
             up = true;
             life = 2;
-            if (isPenalizing)
-                setBackgroundColor(Color.MAGENTA);
-            else
-                setBackgroundColor(Color.CYAN);
+            setImageResource(R.drawable.fig_mole);
         }
 
         public void popDown() {
             up = false;
             life = 0;
-            if (isPenalizing)
-                setBackgroundColor(Color.RED);
+            isHitting = false;
+            if (! isStart)
+                setImageDrawable(null);
             else
-                setBackground(background);
+                setImageResource(R.drawable.fig_hole);
         }
 
         public void fallDown() {
@@ -249,20 +310,29 @@ public class GameActivity extends AppCompatActivity {
                 popDown();
         }
 
+        public void hit() {
+            if (up && ! isHitting) {
+                life = 1;
+                isHitting = false;
+                setImageResource(R.drawable.fig_angry_mole);
+            }
+        }
+
         public void penalize() {
-            isPenalizing = true;
-            if (up)
-                setBackgroundColor(Color.MAGENTA);
-            else
-                setBackgroundColor(Color.RED);
+            setBackgroundColor(Color.RED);
         }
 
         public void resume() {
-            isPenalizing = false;
-            if (up)
-                setBackgroundColor(Color.CYAN);
-            else
-                setBackground(background);
+            setBackgroundResource(R.drawable.fig_grass);
+        }
+
+        public void start() {
+            setImageResource(R.drawable.fig_hole);
+        }
+
+        public void end() {
+            if (! up && ! isPenalizing)
+                setImageDrawable(null);
         }
 
         public boolean isUp() {

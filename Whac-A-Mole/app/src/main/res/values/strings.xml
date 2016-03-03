@@ -24,8 +24,12 @@
     <string name="contributors">https://github.com/c910335</string>
     <string name="github_label">Github</string>
     <string name="github">https://github.com/c910335/Whac-A-Mole</string>
-    <string name="action_rule">Rule</string>
+    <string name="action_game_method">Game Method</string>
     <string name="score">Score:</string>
     <string name="time">Time:</string>
+    <string name="start">Start</string>
+    <string name="step1">step1</string>
+    <string name="step2">step2</string>
+    <string name="step3">step3</string>
 
 </resources>

@@ -3,4 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="rank_margin">88dp</dimen>
+    <dimen name="game_button_size">64dp</dimen>
+    <dimen name="home_button_size">128dp</dimen>
 </resources>

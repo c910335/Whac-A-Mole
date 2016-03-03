@@ -10,7 +10,7 @@
         android:title="@string/pref_title_display_time" />
 
     <SwitchPreference
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:key="penalty"
         android:title="Penalty" />
 

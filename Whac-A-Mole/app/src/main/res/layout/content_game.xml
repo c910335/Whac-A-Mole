@@ -12,12 +12,13 @@
     tools:context="asia.tatsujin.whac_a_mole.GameActivity"
     tools:showIn="@layout/activity_game">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
-        android:text="@string/time"
+    <ImageView
+        android:layout_width="@dimen/game_button_size"
+        android:layout_height="@dimen/game_button_size"
         android:id="@+id/label_time"
+        android:contentDescription="@string/time"
+        android:src="@drawable/fig_time"
+        android:scaleType="fitCenter"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_marginStart="@dimen/activity_horizontal_margin" />
@@ -31,15 +32,15 @@
         android:layout_toEndOf="@+id/label_time"
         android:layout_marginStart="@dimen/activity_horizontal_margin" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
-        android:text="@string/score"
+    <ImageView
+        android:layout_width="@dimen/game_button_size"
+        android:layout_height="@dimen/game_button_size"
         android:id="@+id/label_score"
+        android:contentDescription="@string/score"
+        android:src="@drawable/fig_score"
+        android:scaleType="fitCenter"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/text_score"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin" />
+        android:layout_toStartOf="@+id/text_score" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -51,25 +52,24 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/activity_horizontal_margin" />
 
-    <GridLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/grid_moles"
-        android:layout_below="@+id/text_time"
+        android:id="@+id/view_moles"
+        android:layout_below="@+id/label_time"
         android:layout_above="@+id/button_start"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:columnCount="3"
-        android:rowCount="3">
+        android:orientation="vertical"/>
 
-    </GridLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
+    <ImageButton
+        android:layout_width="@dimen/game_button_size"
+        android:layout_height="@dimen/game_button_size"
+        android:contentDescription="@string/start"
+        android:src="@drawable/fig_start"
+        android:scaleType="fitCenter"
+        android:background="@null"
         android:id="@+id/button_start"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

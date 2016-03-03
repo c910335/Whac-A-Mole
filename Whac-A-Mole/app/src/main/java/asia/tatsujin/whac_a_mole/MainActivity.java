@@ -9,13 +9,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
+
+import com.facebook.appevents.AppEventsLogger;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button playButton;
-    Button multiButton;
-    Button exitButton;
+    ImageButton playButton;
+    ImageButton rankButton;
+    ImageButton exitButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,18 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         setListeners();
+    }
+
+    @Override
+     protected void onResume() {
+        super.onResume();
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppEventsLogger.deactivateApp(this);
     }
 
     @Override
@@ -46,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_about:
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.action_about)
-                        .setView(R.layout.about)
+                        .setView(R.layout.dialog_about)
                         .show();
                 return true;
         }
@@ -56,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        playButton = (Button) findViewById(R.id.button_play);
-        multiButton = (Button) findViewById(R.id.button_rank);
-        exitButton = (Button) findViewById(R.id.button_exit);
+        playButton = (ImageButton) findViewById(R.id.button_play);
+        rankButton = (ImageButton) findViewById(R.id.button_rank);
+        exitButton = (ImageButton) findViewById(R.id.button_exit);
     }
 
     private void setListeners() {
@@ -66,6 +80,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 play();
+            }
+        });
+        rankButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(v.getContext(), RankActivity.class));
             }
         });
         exitButton.setOnClickListener(new View.OnClickListener() {

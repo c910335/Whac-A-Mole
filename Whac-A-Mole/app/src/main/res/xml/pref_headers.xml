@@ -4,7 +4,7 @@
 
     <header
         android:fragment="asia.tatsujin.whac_a_mole.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_info_black_24dp"
+        android:icon="@drawable/ic_info"
         android:title="@string/pref_header_game" />
 
 </preference-headers>
