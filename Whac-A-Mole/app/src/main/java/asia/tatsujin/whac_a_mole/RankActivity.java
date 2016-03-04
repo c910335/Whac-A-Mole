@@ -75,7 +75,7 @@ public class RankActivity extends AppCompatActivity {
         LoginManager.getInstance().logInWithPublishPermissions(this, Collections.singletonList("publish_actions"));
     }
 
-    private void updateRank() {
+    private synchronized void updateRank() {
         scores = new ArrayList<>();
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         JSONObject object = new JSONObject();
