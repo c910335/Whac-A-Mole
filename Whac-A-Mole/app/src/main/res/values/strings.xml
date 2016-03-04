@@ -30,7 +30,8 @@
     <string name="contributors">
         <a href="https://github.com/c910335">Tatsujin Chin</a>\n
         <a href="https://github.com/harry0514s">harry0514s</a>\n
-        <a href="https://github.com/ScarlettCanaan">ScarlettCanaan</a>
+        <a href="https://github.com/ScarlettCanaan">ScarlettCanaan</a>\n
+        <a href="https://github.com/WongKinYiu">Kin-Yiu, Wong</a>
     </string>
     <string name="action_game_method">Game Method</string>
     <string name="score">Score:</string>
@@ -41,5 +42,6 @@
     <string name="step3">step3</string>
     <string name="pref_summary_on_default">High score will be stored.</string>
     <string name="pref_summary_off_default">High score will not be stored.</string>
+    <string name="facebook_error">Something error.</string>
 
 </resources>

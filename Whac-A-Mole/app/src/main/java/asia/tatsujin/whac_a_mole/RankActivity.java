@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -63,12 +64,12 @@ public class RankActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancel() {
-                        finish();
+                        Toast.makeText(RankActivity.this, R.string.facebook_error, Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        Log.w("GG", "G_G");
+                        Log.w("GG", exception.getMessage());
                     }
                 });
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_games_activity", "user_friends"));
