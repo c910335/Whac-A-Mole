@@ -364,7 +364,7 @@ public class GameActivity extends AppCompatActivity {
         }
 
         public void end() {
-            if (! up && ! isPenalizing)
+            if (! up)
                 setImageDrawable(null);
         }
 
